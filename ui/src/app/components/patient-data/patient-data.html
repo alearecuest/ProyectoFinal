@@ -1,0 +1,18 @@
+<section>
+  <h2>Datos del paciente</h2>
+
+  @if (patient$ | async; as patient) {
+    @for (item of patient; track item.id) {
+      <div>
+        <label>Edad</label>
+        <input id="name" name="name" type="text" value="{{ item.age }}" disabled/>
+      </div>
+      <div>
+        <label>Sexo</label>
+        <input id="name" name="name" type="text" value="{{ item.gender }}" disabled/>
+      </div>
+    }
+  } @else {
+    <div>Loading…</div>
+  }
+</section>

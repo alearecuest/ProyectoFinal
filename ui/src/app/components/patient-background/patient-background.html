@@ -1,0 +1,14 @@
+<section>
+  <h2>Antecedentes personales</h2>
+
+  @if (patientBackground$ | async; as patientBackground) {
+    <ul>
+      @for (item of patientBackground; track item.id) {
+        <li>
+          {{ item.term }} - {{ item.checked }}
+        </li>
+      }
+    </ul>
+  }
+
+</section>

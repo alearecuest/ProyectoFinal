@@ -1,0 +1,10 @@
+[
+  { "id": 1, "snomedCode": 160573003, "term": "Sin antecedentes a destacar", "checked": false },
+  { "id": 2, "snomedCode": 160573003, "term": "Sin controles en salud", "checked": false },
+  { "id": 3, "snomedCode": 160573003, "term": "Diabetes mellitus", "checked": false },
+  { "id": 4, "snomedCode": 160573003, "term": "Hiperuricemia / gota", "checked": false },
+  { "id": 5, "snomedCode": 160573003, "term": "Enfermedad renal crónica", "checked": false },
+  { "id": 6, "snomedCode": 160573003, "term": "Cardiopatía isquémica", "checked": false },
+  { "id": 7, "snomedCode": 160573003, "term": "Tabaquismo", "checked": false },
+  { "id": 8, "snomedCode": 160573003, "term": "Consumo de alcohol", "checked": false }
+]

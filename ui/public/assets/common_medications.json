@@ -1,0 +1,7 @@
+[
+  { "id": 1, "snomedCode": 160573003, "term": "Ninguna", "checked": false },
+  { "id": 2, "snomedCode": 160573003, "term": "Antihipertensivos", "checked": false },
+  { "id": 3, "snomedCode": 160573003, "term": "Hipoglucemiantes orales / insulina", "checked": false },
+  { "id": 4, "snomedCode": 160573003, "term": "Diuréticos", "checked": false },
+  { "id": 5, "snomedCode": 160573003, "term": "Estatinas", "checked": false },
+]

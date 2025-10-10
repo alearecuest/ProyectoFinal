@@ -1,0 +1,29 @@
+[
+  {
+    "Alergias": [
+      {
+        "type": "Ninguna",
+        "options": [],
+      },
+      {
+        "type": "AINEs",
+        "options": [
+          { "id": 1, "snomedCode": 100000000, "term": "Ibuprofeno", "checked": false },
+          { "id": 2, "snomedCode": 100000000, "term": "Diclofenac", "checked": false },
+          { "id": 3, "snomedCode": 100000000, "term": "Dipirona", "checked": false },
+          { "id": 4, "snomedCode": 100000000, "term": "Ketoprofeno", "checked": false },
+        ]
+      },
+      {
+        "type": "Antibióticos",
+        "options": [
+          { "id": 1, "snomedCode": 100000000, "term": "Penicilinas, ", "checked": false },
+          { "id": 1, "snomedCode": 100000000, "term": "Cefalosporinas, ", "checked": false },
+          { "id": 2, "snomedCode": 100000000, "term": "Macrólidos, ", "checked": false },
+          { "id": 3, "snomedCode": 100000000, "term": "Quinolonas", "checked": false },
+          { "id": 3, "snomedCode": 100000000, "term": "Sulfonamidas", "checked": false },
+        ]
+      }
+    ]
+  }
+]
