@@ -1,19 +1,18 @@
 import type { FastifyInstance } from "fastify";
-import { PartialState } from "../session.ts";
-import { ConsultationController } from "../controller.ts";
-import { sessions } from "./start.ts";
+import type { PartialState } from "../session.ts";
+import { sessionManager } from "../utils/sessionManager.ts";
 
 export default function registerConsultaEndpoint(fastify: FastifyInstance) {
-  // Actualizar estado y avanzar paso
   fastify.post<{ Body: PartialState; Params: { id: string } }>(
     "/consulta/:id",
     {
       schema: {
-        description: "Actualizar los datos de un paso de la consulta y avanzar al siguiente",
+        tags: ['Consulta'],
+        description: "Actualiza los datos de la consulta y avanza al siguiente paso",
         params: {
           type: "object",
           properties: {
-            id: { type: "string", description: "ID de la sesión del paciente" },
+            id: { type: "string", description: "ID de la sesión" },
           },
           required: ["id"],
         },
@@ -21,24 +20,29 @@ export default function registerConsultaEndpoint(fastify: FastifyInstance) {
           type: "object",
           description: "Datos parciales de la consulta a actualizar",
           properties: {
-            motivo_consulta: { type: "string", description: "Motivo de la consulta" },
+            motivo_consulta: { type: "string" },
             antecedentes_personales: {
               type: "array",
-              items: { type: "string" },
-              description: "Lista de antecedentes personales",
+              items: { type: "string" }
             },
-            alergias: { type: "array", items: { type: "string" }, description: "Lista de alergias" },
-            farmacos_habituales: { type: "array", items: { type: "string" }, description: "Medicamentos habituales" },
-            examen_fisico: { type: "string", description: "Resultados del examen físico" },
-            resumen_clinico: { type: "string", description: "Resumen clínico del paciente" },
+            alergias: {
+              type: "array",
+              items: { type: "string" }
+            },
+            farmacos_habituales: {
+              type: "array",
+              items: { type: "string" }
+            },
+            examen_fisico: { type: "string" },
+            resumen_clinico: { type: "string" },
           },
         },
         response: {
           200: {
             type: "object",
             properties: {
-              pasoActual: { type: "string", description: "Paso actual luego de actualizar" },
-              partialState: { type: "object", description: "Estado completo acumulado de la consulta" },
+              pasoActual: { type: "string" },
+              partialState: { type: "object" },
             },
           },
           404: {
@@ -50,27 +54,42 @@ export default function registerConsultaEndpoint(fastify: FastifyInstance) {
     },
     async (req, reply) => {
       const { id } = req.params;
-      const controller = sessions.get(id);
-      if (!controller) return reply.status(404).send({ error: "No existe la sesión" });
-      controller.savePartialState(req.body);
-      controller.nextStep();
-      return {
-        pasoActual: controller.getCurrentStep(),
-        partialState: controller.getPartialState(),
-      };
+      const controller = sessionManager.getSession(id);
+
+      if (!controller) {
+        return reply.status(404).send({
+          error: "Sesión no encontrada o expirada"
+        });
+      }
+
+      try {
+        controller.savePartialState(req.body);
+        controller.nextStep();
+
+        return {
+          pasoActual: controller.getCurrentStep(),
+          partialState: controller.getPartialState(),
+        };
+      } catch (error) {
+        fastify.log.error(`Error en POST /consulta/${id}:`, error);
+        
+        return reply.status(500).send({
+          error: error instanceof Error ? error.message : 'Error al actualizar consulta'
+        });
+      }
     }
   );
 
-  // Obtener estado actual
   fastify.get<{ Params: { id: string } }>(
     "/consulta/:id",
     {
       schema: {
-        description: "Obtener el estado actual de la consulta",
+        tags: ['Consulta'],
+        description: "Obtiene el estado actual de la consulta",
         params: {
           type: "object",
           properties: {
-            id: { type: "string", description: "ID de la sesión del paciente" },
+            id: { type: "string" },
           },
           required: ["id"],
         },
@@ -91,8 +110,14 @@ export default function registerConsultaEndpoint(fastify: FastifyInstance) {
     },
     async (req, reply) => {
       const { id } = req.params;
-      const controller = sessions.get(id);
-      if (!controller) return reply.status(404).send({ error: "No existe la sesión" });
+      const controller = sessionManager.getSession(id);
+
+      if (!controller) {
+        return reply.status(404).send({
+          error: "Sesión no encontrada o expirada"
+        });
+      }
+
       return {
         pasoActual: controller.getCurrentStep(),
         partialState: controller.getPartialState(),
@@ -100,11 +125,28 @@ export default function registerConsultaEndpoint(fastify: FastifyInstance) {
     }
   );
 
-  // Endpoint GET /consulta-test para probar el backend
-  fastify.get("/consulta-test", async (req, reply) => {
+  fastify.get("/consulta-test", {
+    schema: {
+      tags: ['Consulta'],
+      description: "Endpoint de testing para verificar que el servidor está funcionando",
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            message: { type: "string" },
+            status: { type: "string" },
+            timestamp: { type: "string" },
+            activeSessions: { type: "number" }
+          }
+        }
+      }
+    }
+  }, async (req, reply) => {
     return {
-      message: "ENDPOINT PARA PELADOS.",
+      message: "Backend Elio funcionando correctamente",
       status: "ok",
+      timestamp: new Date().toISOString(),
+      activeSessions: sessionManager.getSessionCount()
     };
   });
 }
