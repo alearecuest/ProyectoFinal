@@ -2,22 +2,26 @@
   "name": "elio-server",
   "version": "2.0.0",
   "type": "module",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node --loader ts-node/esm server.ts",
-    "dev": "node --loader ts-node/esm --watch server.ts",
+    "dev": "tsx watch server.ts",
+    "start": "tsx server.ts",
     "build": "tsc",
+    "prod": "node dist/server.js",
+    "lint": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "medical",
     "ai",
     "consultation",
-    "elio"
+    "elio",
+    "diagnosis",
+    "snomed-ct"
   ],
   "author": "Elio Team",
   "license": "ISC",
-  "description": "Backend API for Elio medical consultation system",
+  "description": "Backend API for Elio medical consultation system with AI-powered differential diagnosis",
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/helmet": "^13.0.2",
@@ -30,7 +34,11 @@
   },
   "devDependencies": {
     "@types/node": "^24.6.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
