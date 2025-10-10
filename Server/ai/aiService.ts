@@ -18,35 +18,28 @@ export async function getGeminiOptions(
     case "antecedentes_personales":
       prompt = prompts.antecedentes_personales(state);
       break;
-
     case "antecedentes_familiares":
       prompt = prompts.antecedentes_familiares(state);
       break;
-
     case "alergias_penicilinas":
       prompt = prompts.alergias_penicilinas(state);
       break;
-
     case "alergias_aines":
       prompt = prompts.alergias_aines(state);
       break;
-
     case "farmacos":
       prompt = prompts.farmacos(state);
       break;
-
     case "anamnesis":
       prompt = prompts.anamnesis(state, anamnesisPrompt);
       break;
-
     case "examenFisico":
     case "examen_fisico":
       prompt = prompts.examen_fisico(state);
       break;
-
     default:
-      console.warn(`Tipo de consulta no reconocido: ${tipo}, usando estado completo`);
-      prompt = `Basado en esta información clínica: ${JSON.stringify(state)}\n\nGenera 8 opciones relevantes para completar la consulta. Responde únicamente con un array JSON válido de strings.`;
+      console.warn(`Tipo no reconocido: ${tipo}`);
+      prompt = `Basado en: ${JSON.stringify(state)}\n\nGenera 8 opciones relevantes. Responde con array JSON de strings.`;
       break;
   }
 
@@ -64,14 +57,13 @@ export async function getGeminiOptions(
 
     try {
       const parsed = JSON.parse(cleanedResponse);
-      
       if (Array.isArray(parsed)) {
         opciones = parsed.filter(item => typeof item === 'string' && item.trim() !== '');
       } else {
         throw new Error("Respuesta no es un array");
       }
     } catch (parseError) {
-      console.warn(`No se pudo parsear JSON, usando fallback de líneas. Error: ${parseError}`);
+      console.warn(`Fallback a líneas. Error: ${parseError}`);
       opciones = cleanedResponse
         .split("\n")
         .map((line: string) => line.replace(/^\d+\.\s*/, "").replace(/^[-*]\s*/, "").trim())
@@ -89,8 +81,8 @@ export async function getGeminiOptions(
     }
 
   } catch (error) {
-    console.error(`Error llamando a Gemini para tipo "${tipo}":`, error);
-    throw new Error(`No se pudieron generar opciones con IA: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    console.error(`Error en Gemini para tipo "${tipo}":`, error);
+    throw new Error(`No se pudieron generar opciones: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 }
 
@@ -118,14 +110,14 @@ export async function getGeminiDiagnostico(state: PartialState): Promise<Resulta
     const diagnostico: ResultadoDiagnostico = JSON.parse(cleanedResponse);
 
     if (!diagnostico.Estado || !diagnostico.Diferenciales || !Array.isArray(diagnostico.Diferenciales)) {
-      throw new Error("Respuesta de IA no tiene la estructura esperada");
+      throw new Error("Respuesta no tiene la estructura esperada");
     }
 
     return diagnostico;
 
   } catch (error) {
-    console.error("Error generando diagnóstico diferencial con Gemini:", error);
-    throw new Error(`No se pudo generar el diagnóstico: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    console.error("Error generando diagnóstico:", error);
+    throw new Error(`No se pudo generar diagnóstico: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 }
 
@@ -139,7 +131,7 @@ export async function getGeminiResumen(state: PartialState): Promise<string> {
     
     return response.trim();
   } catch (error) {
-    console.error("Error generando resumen clínico con Gemini:", error);
-    throw new Error(`No se pudo generar el resumen clínico: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    console.error("Error generando resumen:", error);
+    throw new Error(`No se pudo generar resumen: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 }

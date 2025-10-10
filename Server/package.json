@@ -1,6 +1,6 @@
 {
   "name": "elio-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "server.ts",
   "scripts": {
@@ -9,14 +9,19 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["medical", "ai", "consultation", "elio"],
+  "keywords": [
+    "medical",
+    "ai",
+    "consultation",
+    "elio"
+  ],
   "author": "Elio Team",
   "license": "ISC",
   "description": "Backend API for Elio medical consultation system",
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/helmet": "^13.0.2",
-    "@fastify/rate-limit": "^10.1.1",
+    "@fastify/rate-limit": "^10.3.0",
     "@fastify/swagger": "^9.5.2",
     "@fastify/swagger-ui": "^5.2.3",
     "@google/generative-ai": "^0.24.1",

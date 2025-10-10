@@ -8,39 +8,13 @@ export default function registerGeneratorEndpoint(fastify: FastifyInstance) {
     {
       schema: {
         tags: ['IA'],
-        description: "Genera opciones dinámicas para el paso actual usando IA",
+        description: "Genera opciones para el paso actual",
         params: {
           type: "object",
           properties: {
-            id: { type: "string", description: "ID de la sesión" },
+            id: { type: "string" },
           },
           required: ["id"],
-        },
-        response: {
-          200: {
-            type: "object",
-            properties: {
-              opciones: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    label: { type: "string" },
-                    checked: { type: "boolean" },
-                  },
-                },
-              },
-              pasoActual: { type: "string" }
-            },
-          },
-          404: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
-          500: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          }
         },
       },
     },
@@ -62,7 +36,7 @@ export default function registerGeneratorEndpoint(fastify: FastifyInstance) {
 
         if (!opcionesRaw || !Array.isArray(opcionesRaw) || opcionesRaw.length === 0) {
           return reply.status(500).send({
-            error: "No se pudieron generar opciones. Intenta nuevamente."
+            error: "No se pudieron generar opciones."
           });
         }
 
@@ -78,7 +52,6 @@ export default function registerGeneratorEndpoint(fastify: FastifyInstance) {
 
       } catch (error) {
         fastify.log.error(`Error en /generator/${id}:`, error);
-        
         return reply.status(500).send({
           error: error instanceof Error ? error.message : 'Error al generar opciones'
         });

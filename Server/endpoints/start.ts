@@ -9,7 +9,7 @@ export default function registerStartEndpoint(fastify: FastifyInstance) {
     {
       schema: {
         tags: ['Sesiones'],
-        description: "Crea una nueva sesión de consulta y genera opciones iniciales de antecedentes",
+        description: "Crea una nueva sesión de consulta y genera opciones iniciales",
         body: {
           type: "object",
           required: ["motivo_consulta"],
@@ -25,14 +25,8 @@ export default function registerStartEndpoint(fastify: FastifyInstance) {
           200: {
             type: "object",
             properties: {
-              patientID: {
-                type: "string",
-                description: "ID único de la sesión (UUID)"
-              },
-              pasoActual: {
-                type: "string",
-                description: "Paso inicial de la consulta"
-              },
+              patientID: { type: "string" },
+              pasoActual: { type: "string" },
               opciones: {
                 type: "array",
                 items: {
@@ -42,22 +36,9 @@ export default function registerStartEndpoint(fastify: FastifyInstance) {
                     checked: { type: "boolean" },
                   },
                 },
-                description: "Opciones generadas por IA para antecedentes"
               },
             },
           },
-          400: {
-            type: "object",
-            properties: {
-              error: { type: "string" }
-            }
-          },
-          500: {
-            type: "object",
-            properties: {
-              error: { type: "string" }
-            }
-          }
         },
       },
     },
@@ -72,19 +53,17 @@ export default function registerStartEndpoint(fastify: FastifyInstance) {
 
       try {
         const patientID = randomUUID();
-
         const controller = sessionManager.createSession(patientID);
 
         const opcionesGemini = await getGeminiOptions(
           { motivo_consulta },
-          "antecedentes"
+          "antecedentes_personales"
         );
 
         if (!opcionesGemini || !Array.isArray(opcionesGemini) || opcionesGemini.length === 0) {
           sessionManager.deleteSession(patientID);
-          
           return reply.status(500).send({
-            error: "No se pudieron generar opciones. Por favor, intenta nuevamente."
+            error: "No se pudieron generar opciones. Intenta nuevamente."
           });
         }
 
@@ -103,7 +82,6 @@ export default function registerStartEndpoint(fastify: FastifyInstance) {
 
       } catch (error) {
         fastify.log.error('Error en /start:', error);
-        
         return reply.status(500).send({
           error: error instanceof Error ? error.message : 'Error al iniciar la consulta'
         });

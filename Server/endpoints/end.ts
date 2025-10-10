@@ -8,31 +8,13 @@ export default function registerEndEndpoint(fastify: FastifyInstance) {
     {
       schema: {
         tags: ['Consulta'],
-        description: "Finaliza la consulta y genera un resumen clínico completo",
+        description: "Finaliza consulta y genera resumen clínico",
         body: {
           type: "object",
           required: ["id"],
           properties: {
-            id: { type: "string", description: "ID de la sesión" },
+            id: { type: "string" },
           },
-        },
-        response: {
-          200: {
-            type: "object",
-            properties: {
-              resumen: { type: "string", description: "Resumen clínico generado" },
-              partialState: { type: "object", description: "Estado final de la consulta" },
-              sessionClosed: { type: "boolean" }
-            },
-          },
-          404: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
-          500: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          }
         },
       },
     },
@@ -48,9 +30,7 @@ export default function registerEndEndpoint(fastify: FastifyInstance) {
 
       try {
         const partialState = controller.getPartialState();
-
         const resumen = await getGeminiResumen(partialState);
-
         controller.savePartialState({ resumen_clinico: resumen });
 
         const finalState = controller.getPartialState();
@@ -62,8 +42,7 @@ export default function registerEndEndpoint(fastify: FastifyInstance) {
         };
 
       } catch (error) {
-        fastify.log.error(`Error en /api/end para sesión ${id}:`, error);
-        
+        fastify.log.error(`Error en /api/end:`, error);
         return reply.status(500).send({
           error: error instanceof Error ? error.message : 'Error al generar resumen'
         });

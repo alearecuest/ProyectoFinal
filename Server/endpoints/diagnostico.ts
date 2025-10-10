@@ -8,55 +8,13 @@ export default function registerDiagnosticoEndpoint(fastify: FastifyInstance) {
     {
       schema: {
         tags: ['IA', 'Diagnóstico'],
-        description: "Genera diagnóstico diferencial con codificación SNOMED CT basado en datos clínicos recolectados",
+        description: "Genera diagnóstico diferencial con SNOMED CT",
         body: {
           type: "object",
           required: ["id"],
           properties: {
-            id: { type: "string", description: "ID de la sesión" },
+            id: { type: "string" },
           },
-        },
-        response: {
-          200: {
-            type: "object",
-            properties: {
-              Estado: { type: "string" },
-              Diferenciales: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    Patologia: { type: "string" },
-                    Probabilidad: { type: "string" },
-                    Justificacion: { type: "string" }
-                  }
-                }
-              },
-              Analisis: { type: "string" },
-              Proxima_Accion: { type: "string" },
-              Codificacion_Estandarizada: { type: "string" },
-              Patologias_Codificadas: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    Patologia: { type: "string" },
-                    SNOMED_ConceptID: { type: "string" },
-                    SNOMED_Term: { type: "string" },
-                    Tipo_Entidad: { type: "string" }
-                  }
-                }
-              }
-            },
-          },
-          404: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
-          500: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          }
         },
       },
     },
@@ -75,19 +33,17 @@ export default function registerDiagnosticoEndpoint(fastify: FastifyInstance) {
 
         if (!partialState.motivo_consulta) {
           return reply.status(400).send({
-            error: "Faltan datos clínicos mínimos. Se requiere al menos el motivo de consulta."
+            error: "Faltan datos clínicos mínimos."
           });
         }
 
         const diagnostico = await getGeminiDiagnostico(partialState);
-
         controller.savePartialState({ diagnostico });
 
         return diagnostico;
 
       } catch (error) {
-        fastify.log.error(`Error en /api/diagnostico para sesión ${id}:`, error);
-        
+        fastify.log.error(`Error en /api/diagnostico:`, error);
         return reply.status(500).send({
           error: error instanceof Error ? error.message : 'Error al generar diagnóstico'
         });

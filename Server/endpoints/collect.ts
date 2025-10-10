@@ -7,19 +7,15 @@ export default function registerCollectEndpoint(fastify: FastifyInstance) {
     {
       schema: {
         tags: ['Consulta'],
-        description: "Recibe las opciones seleccionadas por el usuario y las guarda en el estado",
+        description: "Recibe opciones seleccionadas y las guarda",
         body: {
           type: "object",
           required: ["id", "opciones"],
           properties: {
-            id: {
-              type: "string",
-              description: "ID de la sesión"
-            },
-            opciones: {
-              type: "array",
-              items: { type: "string" },
-              description: "Array de opciones seleccionadas (labels)"
+            id: { type: "string" },
+            opciones: { 
+              type: "array", 
+              items: { type: "string" }
             },
           },
         },
@@ -30,14 +26,6 @@ export default function registerCollectEndpoint(fastify: FastifyInstance) {
               success: { type: "boolean" },
               partialState: { type: "object" },
             },
-          },
-          400: {
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
-          404: {
-            type: "object",
-            properties: { error: { type: "string" } },
           },
         },
       },
@@ -74,8 +62,7 @@ export default function registerCollectEndpoint(fastify: FastifyInstance) {
           partialState: controller.getPartialState(),
         };
       } catch (error) {
-        fastify.log.error(`Error en /api/collect para sesión ${id}:`, error);
-        
+        fastify.log.error(`Error en /api/collect:`, error);
         return reply.status(500).send({
           error: error instanceof Error ? error.message : 'Error al guardar opciones'
         });

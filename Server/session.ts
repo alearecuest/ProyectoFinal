@@ -1,6 +1,5 @@
 export type ConsultationStep =
-  | "identificacion"
-  | "motivo_consulta"
+  | "consulta"
   | "anamnesis"
   | "antecedentes_personales"
   | "antecedentes_familiares"
@@ -18,8 +17,8 @@ export interface Option {
 }
 
 export interface DatosIdentificativos {
-  edad: number;
-  genero: "masculino" | "femenino" | "otro";
+  edad?: number;
+  genero?: "masculino" | "femenino" | "otro";
 }
 
 export interface SignosVitales {
@@ -96,35 +95,23 @@ export interface ResultadoDiagnostico {
 
 export interface PartialState {
   datos_identificativos?: DatosIdentificativos;
-  
   motivo_consulta?: string;
-  
   anamnesis?: Anamnesis;
-  
   antecedentes_personales?: AntecedentesPersonales;
   antecedentes_familiares?: string[];
-  
   alergias?: AlergiasDetalladas;
-  
   farmacos_habituales?: string[];
-  
   signos_vitales?: SignosVitales;
-  
   examen_fisico?: ExamenFisico;
-  
   resultados_laboratorio?: Record<string, any>;
   imagenes?: string[];
-  
   diagnostico?: ResultadoDiagnostico;
-  
   resumen_clinico?: string;
-  
   opciones?: Option[];
 }
 
 export const CONSULTATION_STEPS: readonly ConsultationStep[] = [
-  "identificacion",
-  "motivo_consulta",
+  "consulta",
   "anamnesis",
   "antecedentes_personales",
   "antecedentes_familiares",
@@ -142,8 +129,8 @@ export const ALERGIAS_PENICILINAS = [
   "Penicilina V",
   "Amoxicilina",
   "Ampicilina",
-  "Amoxicilina + Ácido Clavulánico (Augmentine)",
-  "Cefalosporinas (reacción cruzada posible)"
+  "Amoxicilina + Ácido Clavulánico",
+  "Cefalosporinas (reacción cruzada)"
 ] as const;
 
 export const ALERGIAS_AINES = [

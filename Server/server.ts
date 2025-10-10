@@ -41,7 +41,7 @@ async function startServer() {
         return {
           statusCode: 429,
           error: 'Too Many Requests',
-          message: `Límite de rate excedido. Intenta nuevamente en ${Math.ceil(context.ttl / 1000)} segundos.`
+          message: `Límite excedido. Intenta en ${Math.ceil(context.ttl / 1000)} segundos.`
         };
       }
     });

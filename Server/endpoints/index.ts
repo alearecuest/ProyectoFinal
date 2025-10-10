@@ -15,7 +15,7 @@ export default async function registerEndpoints(fastify: FastifyInstance) {
       info: {
         title: "Elio API",
         version: "2.0.0",
-        description: "API para sistema de consultas médicas con IA y diagnóstico diferencial SNOMED CT - Contexto Uruguay",
+        description: "API para sistema de consultas médicas con IA y diagnóstico diferencial SNOMED CT",
         contact: {
           name: "Elio Team",
           url: "https://github.com/alearecuest/ProyectoFinal"
