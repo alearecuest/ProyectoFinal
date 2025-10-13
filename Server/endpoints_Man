@@ -1,0 +1,203 @@
+Health Check
+GET /health
+
+Ejemplko: curl http://localhost:10000/health
+
+Iniciar Consulta
+POST /start
+
+Ejemplo: 
+{
+  "motivo_consulta": "lo que motiva al paciente a concurrir"
+}
+
+{
+  "patientID": "f5642460-6fb6-4941-9532-189a89a1ff8d", este codigo es la id del paciente
+  "pasoActual": "consulta",
+  "opciones": [
+    {
+      "label": "Hipertensión arterial diagnosticada hace 5 años",
+      "checked": false
+    },
+    {
+      "label": "Diabetes mellitus tipo 2 en tratamiento",
+      "checked": false
+    },
+    {
+      "label": "Tabaquismo activo",
+      "checked": false
+    }
+  ]
+}
+
+curl -X POST http://localhost:10000/start \
+  -H "Content-Type: application/json" \
+  -d '{"motivo_consulta": "Dolor abdominal intenso de 12 horas"}'
+
+Request
+POST /api/collect
+
+{
+  "id": "f5642460-6fb6-4941-9532-189a89a1ff8d",
+  "opciones": [
+    "Hipertensión arterial diagnosticada hace 5 años",
+    "Diabetes mellitus tipo 2 en tratamiento",
+    "Tabaquismo activo"
+  ]
+}
+
+{
+  "success": true,
+  "partialState": {
+    "motivo_consulta": "Dolor abdominal intenso de 12 horas",
+    "opciones": [
+      "Hipertensión arterial diagnosticada hace 5 años",
+      "Diabetes mellitus tipo 2 en tratamiento",
+      "Tabaquismo activo"
+    ]
+  }
+}
+
+Ejemplo:
+curl -X POST http://localhost:10000/api/collect \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "f5642460-6fb6-4941-9532-189a89a1ff8d",
+    "opciones": ["Hipertensión arterial", "Diabetes tipo 2", "Tabaquismo"]
+  }'
+
+
+Generar Diagnóstico Diferencial
+POST /api/diagnostico
+
+{
+  "id": "f5642460-6fb6-4941-9532-189a89a1ff8d"
+}
+
+{
+  "Estado": "Paciente con dolor abdominal agudo en fosa ilíaca derecha...",
+  "Diferenciales": [
+    {
+      "Patología": "Apendicitis Aguda",
+      "Probabilidad": "Muy Alta",
+      "Justificación": "Dolor localizado en FID, náuseas, vómitos. Requiere evaluación quirúrgica urgente."
+    },
+    {
+      "Patología": "Diverticulitis Aguda",
+      "Probabilidad": "Media",
+      "Justificación": "Dolor abdominal con factores de riesgo, aunque localización atípica."
+    },
+    {
+      "Patología": "Obstrucción Intestinal",
+      "Probabilidad": "Baja",
+      "Justificación": "Náuseas presentes, pero sin otros signos característicos."
+    }
+  ],
+  "Análisis": "El cuadro clínico es altamente sugestivo de apendicitis aguda...",
+  "Próxima_Acción": "1) Evaluación por cirugía general urgente. 2) Laboratorio completo. 3) Ecografía/TC abdominal.",
+  "Codificación_Estandarizada": "SNOMED CT International Edition",
+  "Patologías_Codificadas": [
+    {
+      "Patología": "Apendicitis Aguda",
+      "SNOMED_ConceptID": "85189001",
+      "SNOMED_Term": "Acute appendicitis",
+      "Tipo_Entidad": "Clinical Finding"
+    },
+    {
+      "Patología": "Diverticulitis Aguda",
+      "SNOMED_ConceptID": "307496006",
+      "SNOMED_Term": "Acute diverticulitis",
+      "Tipo_Entidad": "Clinical Finding"
+    }
+  ]
+}
+
+Ejemplo:
+curl -X POST http://localhost:10000/api/diagnostico \
+  -H "Content-Type: application/json" \
+  -d '{"id": "f5642460-6fb6-4941-9532-189a89a1ff8d"}'
+
+Generar Más Opciones
+GET /generator/:id
+
+{
+  "opciones": [
+    "Historia de enfermedad inflamatoria intestinal",
+    "Alergias medicamentosas conocidas",
+    "Consumo de AINEs de forma crónica",
+    "Antecedente de cólico renal"
+  ]
+}
+
+Ejemmplo: curl http://localhost:10000/generator/f5642460-6fb6-4941-9532-189a89a1ff8d
+
+Consultar Estado de Sesión
+GET /consulta/:id
+
+{
+  "partialState": {
+    "motivo_consulta": "Dolor abdominal intenso de 12 horas",
+    "opciones": [
+      "Hipertensión arterial",
+      "Diabetes tipo 2"
+    ],
+    "diagnostico": {
+      "Estado": "...",
+      "Diferenciales": [...],
+      "Patologías_Codificadas": [...]
+    }
+  }
+}
+
+Ejemplo: curl http://localhost:10000/consulta/f5642460-6fb6-4941-9532-189a89a1ff8d
+
+Finalizar Consulta
+POST /api/end
+
+{
+  "id": "f5642460-6fb6-4941-9532-189a89a1ff8d"
+}
+
+{
+  "resumen": "RESUMEN DE CONSULTA MÉDICA\n\nFecha: 2025-10-13\n\nMOTIVO DE CONSULTA:\nDolor abdominal intenso...\n\nANTECEDENTES:\n- Hipertensión arterial\n- Diabetes tipo 2\n\nDIAGNÓSTICOS DIFERENCIALES:\n\n1. Apendicitis Aguda (Muy Alta)\n   SNOMED: 85189001\n   ...\n\nRECOMENDACIONES:\n1. Evaluación quirúrgica urgente\n2. Laboratorio completo\n...",
+  "partialState": {...},
+  "sessionClosed": true
+}
+
+Ejemplo
+curl -X POST http://localhost:10000/api/end \
+  -H "Content-Type: application/json" \
+  -d '{"id": "f5642460-6fb6-4941-9532-189a89a1ff8d"}'
+
+Te pego un ejemplo del flujo del programa:
+
+# 1. Iniciamos
+PATIENT_ID=$(curl -s -X POST http://localhost:10000/start \
+  -H "Content-Type: application/json" \
+  -d '{"motivo_consulta": "Dolor torácico opresivo"}' \
+  | jq -r '.patientID')
+
+echo "Patient ID: $PATIENT_ID"
+
+# 2. Guardamos antecedentes
+curl -X POST http://localhost:10000/api/collect \
+  -H "Content-Type: application/json" \
+  -d "{\"id\": \"$PATIENT_ID\", \"opciones\": [\"Hipertensión\", \"Tabaquismo\"]}"
+
+# 3. Generamos diagnóstico
+curl -X POST http://localhost:10000/api/diagnostico \
+  -H "Content-Type: application/json" \
+  -d "{\"id\": \"$PATIENT_ID\"}"
+
+# 4. Finalizamos
+curl -X POST http://localhost:10000/api/end \
+  -H "Content-Type: application/json" \
+  -d "{\"id\": \"$PATIENT_ID\"}"
+
+Los CORS con orígenes permitidos:
+
+http://localhost:3000
+http://localhost:4200
+http://localhost:5173
+
+
