@@ -187,15 +187,3 @@ Security team reviews:
 - Third-party integrations quarterly
 - Authentication and authorization code on every PR
 
-## Contact
-
-For security-related questions or concerns:
-
-- **Security Team:** security@elio-project.com
-- **Project Maintainer:** [@alearecuest](https://github.com/alearecuest)
-- **GitHub Security:** Use the Security tab in this repository
-
----
-
-**Last Updated:** 2025-10-14  
-**Version:** 2.0.0
