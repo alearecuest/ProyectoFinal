@@ -25,7 +25,7 @@ export default async function registerEndpoints(fastify: FastifyInstance) {
         {
           url: config.nodeEnv === 'production'
             ? `https://proyectofinal-backend.onrender.com`
-            : `http://localhost:${config.port}`,
+            : `http://127.0.0.1:${config.port}`,
           description: config.nodeEnv === 'production' ? 'Producción' : 'Desarrollo'
         }
       ],
@@ -44,7 +44,7 @@ export default async function registerEndpoints(fastify: FastifyInstance) {
       docExpansion: "list",
       deepLinking: true
     },
-    staticCSP: true
+    staticCSP: false
   });
 
   registerStartEndpoint(fastify);

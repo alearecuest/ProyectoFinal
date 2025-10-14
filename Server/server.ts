@@ -14,22 +14,12 @@ const fastify = Fastify({
 async function startServer() {
   try {
     await fastify.register(helmet, {
-      contentSecurityPolicy: config.nodeEnv === 'production'
+      contentSecurityPolicy: false,
+      global: true
     });
 
     await fastify.register(cors, {
-      origin: (origin, callback) => {
-        if (!origin) {
-          callback(null, true);
-          return;
-        }
-
-        if (config.allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error(`Origin ${origin} no permitido por CORS`), false);
-        }
-      },
+      origin: config.nodeEnv === 'development' ? true : config.allowedOrigins,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
     });

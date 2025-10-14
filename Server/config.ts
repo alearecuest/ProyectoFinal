@@ -27,8 +27,10 @@ export const config = {
   rateLimitWindowMinutes: parseInt(process.env.RATE_LIMIT_WINDOW_MINUTES || "15", 10),
   
   geminiApiKey: process.env.GEMINI_API_KEY!,
-  geminiModel: process.env.GEMINI_MODEL || "gemini-1.5-flash",
+  geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash",
   maxOptions: parseInt(process.env.MAX_OPTIONS || "8", 10),
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+  staticCSP: false
 } as const;
 
 if (config.port < 1 || config.port > 65535) {
