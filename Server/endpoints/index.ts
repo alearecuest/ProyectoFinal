@@ -54,5 +54,5 @@ export default async function registerEndpoints(fastify: FastifyInstance) {
   registerEndEndpoint(fastify);
   registerGeneratorEndpoint(fastify);
 
-  console.log("✅ Endpoints registrados correctamente");
+  console.log("Endpoints registrados correctamente");
 }

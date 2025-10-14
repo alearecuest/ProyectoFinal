@@ -17,7 +17,7 @@ export class SessionManager {
       this.cleanExpiredSessions();
     }, intervalMs);
 
-    console.log(`✅ Tarea de limpieza de sesiones iniciada (cada ${config.sessionCleanupIntervalMinutes} minutos)`);
+    console.log(`Tarea de limpieza de sesiones iniciada (cada ${config.sessionCleanupIntervalMinutes} minutos)`);
   }
 
   private cleanExpiredSessions(): void {
@@ -30,12 +30,12 @@ export class SessionManager {
         this.sessions.delete(id);
         this.sessionTimestamps.delete(id);
         deletedCount++;
-        console.log(`🗑️  Sesión ${id} expirada y eliminada`);
+        console.log(`Sesión ${id} expirada y eliminada`);
       }
     }
 
     if (deletedCount > 0) {
-      console.log(`✅ Limpieza completada: ${deletedCount} sesión(es) eliminada(s)`);
+      console.log(`Limpieza completada: ${deletedCount} sesión(es) eliminada(s)`);
     }
   }
 
@@ -48,7 +48,7 @@ export class SessionManager {
     this.sessions.set(patientID, controller);
     this.sessionTimestamps.set(patientID, Date.now());
     
-    console.log(`✅ Sesión creada: ${patientID}`);
+    console.log(`Sesión creada: ${patientID}`);
     return controller;
   }
 
@@ -67,7 +67,7 @@ export class SessionManager {
     this.sessionTimestamps.delete(patientID);
     
     if (deleted) {
-      console.log(`🗑️  Sesión eliminada: ${patientID}`);
+      console.log(`Sesión eliminada: ${patientID}`);
     }
     
     return deleted;
@@ -95,7 +95,7 @@ export class SessionManager {
     
     this.sessions.clear();
     this.sessionTimestamps.clear();
-    console.log("🛑 SessionManager destruido");
+    console.log("SessionManager destruido");
   }
 }
 
