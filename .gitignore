@@ -1,6 +1,7 @@
 # Node.js dependencies
 Server/node_modules/
 Google-Gemini-Api/node_modules/
+.env.example
 
 # npm logs
 npm-debug.log*
