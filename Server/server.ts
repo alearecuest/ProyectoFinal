@@ -5,23 +5,36 @@ import rateLimit from '@fastify/rate-limit';
 import registerEndpoints from './endpoints/index.ts';
 import { config } from './config.ts';
 
+const MESSAGES = {
+  SERVER_STARTED: 'Server successfully started',
+  SERVER_ERROR: 'Error starting server:',
+  SIGNAL_RECEIVED: (signal: string) => `Received ${signal} signal, shutting down server...`,
+  SERVER_CLOSED: 'Server closed successfully',
+  CLOSE_ERROR: 'Error closing server:',
+  RATE_LIMIT_EXCEEDED: (ttl: number) => 
+    `Rate limit exceeded. Retry in ${Math.ceil(ttl / 1000)} seconds.`,
+  UNHANDLED_REJECTION: 'Unhandled Rejection at:',
+} as const;
+
 const fastify = Fastify({ 
   logger: {
-    level: config.nodeEnv === 'production' ? 'info' : 'debug'
+    level: config.logLevel
   }
 });
 
 async function startServer() {
   try {
-    await fastify.register(helmet, {
-      contentSecurityPolicy: false,
-      global: true
-    });
+    if (config.enableHelmet) {
+      await fastify.register(helmet, {
+        contentSecurityPolicy: config.contentSecurityPolicy,
+        global: true
+      });
+    }
 
     await fastify.register(cors, {
       origin: config.nodeEnv === 'development' ? true : config.allowedOrigins,
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      methods: [...config.allowedMethods]
     });
 
     await fastify.register(rateLimit, {
@@ -31,7 +44,7 @@ async function startServer() {
         return {
           statusCode: 429,
           error: 'Too Many Requests',
-          message: `Límite excedido. Intenta en ${Math.ceil(context.ttl / 1000)} segundos.`
+          message: MESSAGES.RATE_LIMIT_EXCEEDED(context.ttl)
         };
       }
     });
@@ -41,7 +54,8 @@ async function startServer() {
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: config.nodeEnv
+        environment: config.nodeEnv,
+        version: process.env.npm_package_version || '2.0.0'
       };
     });
 
@@ -52,7 +66,8 @@ async function startServer() {
         error: error.message,
         stack: error.stack,
         url: request.url,
-        method: request.method
+        method: request.method,
+        timestamp: new Date().toISOString()
       });
 
       const statusCode = error.statusCode || 500;
@@ -70,33 +85,41 @@ async function startServer() {
 
     await fastify.listen({ 
       port: config.port, 
-      host: '0.0.0.0' 
+      host: config.host
     });
 
-    console.log('\n🚀 ================================');
-    console.log(`✅ Servidor Elio iniciado correctamente`);
-    console.log(`📍 URL: http://0.0.0.0:${config.port}`);
-    console.log(`📚 Docs: http://0.0.0.0:${config.port}/docs`);
-    console.log(`🏥 Health: http://0.0.0.0:${config.port}/health`);
-    console.log(`🌍 Entorno: ${config.nodeEnv}`);
-    console.log('================================\n');
+    console.log('================================');
+    console.log(`[SERVER] ${MESSAGES.SERVER_STARTED}`);
+    console.log(`[SERVER] URL: http://${config.host}:${config.port}`);
+    console.log(`[SERVER] Docs: http://${config.host}:${config.port}/docs`);
+    console.log(`[SERVER] Health: http://${config.host}:${config.port}/health`);
+    console.log(`[SERVER] Environment: ${config.nodeEnv}`);
+    console.log(`[SERVER] CORS: ${config.allowedOrigins.join(', ')}`);
+    console.log('================================');
 
   } catch (err) {
-    console.error('❌ Error al iniciar el servidor:', err);
+    console.error(`[SERVER] ${MESSAGES.SERVER_ERROR}`, err);
     process.exit(1);
   }
 }
 
-process.on('SIGINT', async () => {
-  console.log('\n⚠️  Recibida señal SIGINT, cerrando servidor...');
-  await fastify.close();
-  process.exit(0);
-});
+const shutdown = async (signal: string) => {
+  console.log(`\n[SERVER] ${MESSAGES.SIGNAL_RECEIVED(signal)}`);
+  try {
+    await fastify.close();
+    console.log(`[SERVER] ${MESSAGES.SERVER_CLOSED}`);
+    process.exit(0);
+  } catch (err) {
+    console.error(`[SERVER] ${MESSAGES.CLOSE_ERROR}`, err);
+    process.exit(1);
+  }
+};
 
-process.on('SIGTERM', async () => {
-  console.log('\n⚠️  Recibida señal SIGTERM, cerrando servidor...');
-  await fastify.close();
-  process.exit(0);
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error(`[SERVER] ${MESSAGES.UNHANDLED_REJECTION}`, promise, 'reason:', reason);
 });
 
 startServer();
