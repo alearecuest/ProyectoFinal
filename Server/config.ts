@@ -106,4 +106,3 @@ console.log(`[CONFIG] CORS Origins: ${config.allowedOrigins.join(', ')}`);
 
 export const HTTP_METHODS = ALLOWED_HTTP_METHODS;
 export const DEFAULT_ORIGINS = DEFAULT_ALLOWED_ORIGINS;
-

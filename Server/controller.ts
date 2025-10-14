@@ -11,6 +11,11 @@ const ERROR_MESSAGES = {
   STEP_NOT_FOUND: (step: ConsultationStep) => `Step not found in CONSULTATION_STEPS: ${step}`,
 } as const;
 
+const LOG_PREFIX = {
+  SAVE_STATE: (id: string) => `[${id}] Saving partial state:`,
+  NEW_STATE: (id: string) => `[${id}] New state:`,
+} as const;
+
 export class ConsultationController {
   private pasoActual: ConsultationStep;
   private readonly patientID: string;
@@ -51,10 +56,10 @@ export class ConsultationController {
       throw new Error(ERROR_MESSAGES.INVALID_UPDATE);
     }
     
-    console.log(`[${this.patientID}] Saving partial state:`, update);
+    console.log(LOG_PREFIX.SAVE_STATE(this.patientID), update);
     this.partialState = { ...this.partialState, ...update };
     this.updatedAt = new Date();
-    console.log(`[${this.patientID}] New state:`, this.partialState);
+    console.log(LOG_PREFIX.NEW_STATE(this.patientID), this.partialState);
   }
 
   getPartialState(): Readonly<PartialState> {

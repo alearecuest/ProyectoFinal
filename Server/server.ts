@@ -16,6 +16,8 @@ const MESSAGES = {
   UNHANDLED_REJECTION: 'Unhandled Rejection at:',
 } as const;
 
+const APP_VERSION = process.env.npm_package_version || '2.0.0';
+
 const fastify = Fastify({ 
   logger: {
     level: config.logLevel
@@ -55,7 +57,7 @@ async function startServer() {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         environment: config.nodeEnv,
-        version: process.env.npm_package_version || '2.0.0'
+        version: APP_VERSION
       };
     });
 
@@ -94,6 +96,7 @@ async function startServer() {
     console.log(`[SERVER] Docs: http://${config.host}:${config.port}/docs`);
     console.log(`[SERVER] Health: http://${config.host}:${config.port}/health`);
     console.log(`[SERVER] Environment: ${config.nodeEnv}`);
+    console.log(`[SERVER] Version: ${APP_VERSION}`);
     console.log(`[SERVER] CORS: ${config.allowedOrigins.join(', ')}`);
     console.log('================================');
 
