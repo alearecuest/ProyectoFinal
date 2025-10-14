@@ -136,11 +136,3 @@ npm start
 
 ---
 
-## Contributing
-
-See [CONTRIBUTING.md](docs/contributing/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
----
-
-**Maintained by:** [@alearecuest](https://github.com/alearecuest)  
-**Repository:** [https://github.com/alearecuest/ProyectoFinal](https://github.com/alearecuest/ProyectoFinal)
