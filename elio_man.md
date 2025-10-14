@@ -541,13 +541,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 
 ---
 
-## Project Team
-
-- **Alejandro Arecuenaga** - [@alearecuest](https://github.com/alearecuest) - Software Developer
-- **Fernando Rato** - [@feratholberton](https://github.com/feratholberton) - Project Lead
-
----
-
 ## Acknowledgments
 
 - [Google Gemini API](https://ai.google.dev/gemini-api) - Artificial Intelligence Platform
@@ -556,15 +549,3 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 - [Angular Platform](https://angular.dev/) - Frontend Application Framework
 
 ---
-
-## Security
-
-For security concerns, please review our [Security Policy](SECURITY.md).
-
-To report a vulnerability, please contact the security team through GitHub Security Advisories.
-
----
-
-**Version:** 2.0.0  
-**Last Updated:** 2025-10-14  
-**Repository:** [https://github.com/alearecuest/ProyectoFinal](https://github.com/alearecuest/ProyectoFinal)
